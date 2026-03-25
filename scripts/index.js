@@ -7,6 +7,11 @@ gsap.registerPlugin(ScrollTrigger);
 window._gsap = gsap;
 window._ScrollTrigger = ScrollTrigger;
 
+// Our isolated ScrollTrigger needs its own scroll/resize listeners
+// since Webflow's ticker won't pump our instance
+window.addEventListener('scroll', function () { ScrollTrigger.update(); }, { passive: true });
+window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
+
 // ---- PARALLAX ----
 (function () {
   var sections = document.querySelectorAll('[data-parallax], [data-parallax-bg]');
