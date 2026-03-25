@@ -1,72 +1,56 @@
-(function () {
-  'use strict';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-  function init() {
-    console.log('[webflow-scripts] parallax loaded');
+gsap.registerPlugin(ScrollTrigger);
 
-    var sections = document.querySelectorAll('[data-parallax]');
-    var bgElements = document.querySelectorAll('[data-parallax-bg]');
+function init() {
+  console.log('[webflow-scripts] parallax loaded');
 
-    if (!sections.length && !bgElements.length) return;
+  document.querySelectorAll('[data-parallax]').forEach(function (section) {
+    section.querySelectorAll('[data-parallax-speed]').forEach(function (item) {
+      var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
+      var range = speed * 100;
 
-    var items = [];
-
-    sections.forEach(function (section) {
-      section.querySelectorAll('[data-parallax-speed]').forEach(function (el) {
-        items.push({
-          el: el,
-          trigger: section,
-          speed: parseFloat(el.dataset.parallaxSpeed) || 0.5,
-          type: 'transform',
-        });
-      });
-    });
-
-    bgElements.forEach(function (el) {
-      items.push({
-        el: el,
-        trigger: el,
-        speed: parseFloat(el.dataset.parallaxSpeed) || 0.3,
-        type: 'background',
-      });
-    });
-
-    var ticking = false;
-
-    function update() {
-      var viewH = window.innerHeight;
-
-      items.forEach(function (item) {
-        var rect = item.trigger.getBoundingClientRect();
-        var progress = 1 - rect.bottom / (viewH + rect.height);
-        progress = Math.max(0, Math.min(1, progress));
-
-        if (item.type === 'transform') {
-          var y = (progress - 0.5) * item.speed * 100;
-          item.el.style.transform = 'translateY(' + y + 'px)';
-        } else {
-          var bgY = (progress - 0.5) * item.speed * 50;
-          item.el.style.backgroundPositionY = bgY + '%';
+      gsap.fromTo(
+        item,
+        { yPercent: -range / 2 },
+        {
+          yPercent: range / 2,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
         }
-      });
+      );
+    });
+  });
 
-      ticking = false;
-    }
+  document.querySelectorAll('[data-parallax-bg]').forEach(function (el) {
+    var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
+    var range = speed * 50;
 
-    function onScroll() {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
+    gsap.fromTo(
+      el,
+      { backgroundPositionY: '-' + range + '%' },
+      {
+        backgroundPositionY: range + '%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
       }
-    }
+    );
+  });
+}
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    update();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
