@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview: Parallax</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; }
+
+    .spacer { height: 50vh; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; opacity: 0.3; }
+
+    /* Background parallax hero */
+    .hero {
+      height: 80vh;
+      background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1400&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: 4rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    }
+
+    /* Section with boxes */
+    .section {
+      padding: 6rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section h2 { font-size: 2rem; margin-bottom: 2rem; text-align: center; }
+
+    .boxes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .box {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      border: 1px solid #2a2a2a;
+    }
+    .box h3 { margin-bottom: 0.5rem; }
+    .box p { opacity: 0.6; font-size: 0.9rem; }
+
+    /* Second parallax bg section */
+    .parallax-band {
+      height: 60vh;
+      background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1400&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .parallax-band h2 { font-size: 3rem; text-shadow: 0 2px 20px rgba(0,0,0,0.6); }
+  </style>
+</head>
+<body>
+
+  <div class="spacer">Scroll down to see parallax effects</div>
+
+  <!-- Background parallax -->
+  <div class="hero" data-parallax-bg data-parallax-speed="0.3">
+    <h1>Background Parallax</h1>
+  </div>
+
+  <div class="spacer">&nbsp;</div>
+
+  <!-- Section parallax: 3 boxes at different speeds -->
+  <div class="section" data-parallax>
+    <h2>Section Parallax</h2>
+    <div class="boxes">
+      <div class="box" data-parallax-speed="0.2">
+        <h3>Slow</h3>
+        <p>speed: 0.2</p>
+      </div>
+      <div class="box" data-parallax-speed="0.5">
+        <h3>Medium</h3>
+        <p>speed: 0.5</p>
+      </div>
+      <div class="box" data-parallax-speed="1.0">
+        <h3>Fast</h3>
+        <p>speed: 1.0</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="spacer">&nbsp;</div>
+
+  <!-- Another bg parallax -->
+  <div class="parallax-band" data-parallax-bg data-parallax-speed="0.5">
+    <h2>Another Parallax Band</h2>
+  </div>
+
+  <div class="spacer">&nbsp;</div>
+
+  <!-- Negative speed example -->
+  <div class="section" data-parallax>
+    <h2>Mixed Directions</h2>
+    <div class="boxes">
+      <div class="box" data-parallax-speed="-0.3">
+        <h3>Reverse</h3>
+        <p>speed: -0.3</p>
+      </div>
+      <div class="box" data-parallax-speed="0">
+        <h3>Static</h3>
+        <p>speed: 0</p>
+      </div>
+      <div class="box" data-parallax-speed="0.8">
+        <h3>Forward</h3>
+        <p>speed: 0.8</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="spacer">&nbsp;</div>
+
+  <script type="module" src="/scripts/parallax.js"></script>
+</body>
+</html>
