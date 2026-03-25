@@ -8,7 +8,7 @@ const scriptsDir = resolve(__dirname, 'scripts');
 
 try {
   readdirSync(scriptsDir)
-    .filter((f) => f.endsWith('.js'))
+    .filter((f) => f.endsWith('.js') && f !== 'gsap-utils.js')
     .forEach((f) => {
       const name = f.replace('.js', '');
       scriptEntries[name] = resolve(scriptsDir, f);
@@ -21,6 +21,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: scriptEntries,
+      external: ['gsap', 'gsap/ScrollTrigger'],
       output: {
         dir: 'dist',
         entryFileNames: '[name].js',
