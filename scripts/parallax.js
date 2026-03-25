@@ -1,33 +1,53 @@
-import { gsap } from './gsap-utils.js';
+(function () {
+  const gsap = window.gsap;
+  const ScrollTrigger = window.ScrollTrigger;
 
-function init() {
-  console.log('[webflow-scripts] parallax loaded');
+  if (!gsap || !ScrollTrigger) {
+    console.error('[webflow-scripts] parallax: gsap or ScrollTrigger not found on window');
+    return;
+  }
 
-  // --- Section parallax: elements move at different rates within a section ---
-  // Usage: <div data-parallax>
-  //          <div data-parallax-speed="0.3">slow</div>
-  //          <div data-parallax-speed="1.2">fast</div>
-  //        </div>
-  //
-  // Speed guide: 0 = no movement, 0.5 = subtle, 1 = normal scroll, 1.5+ = fast
-  // Negative values = moves opposite to scroll direction
+  gsap.registerPlugin(ScrollTrigger);
 
-  document.querySelectorAll('[data-parallax]').forEach((section) => {
-    const items = section.querySelectorAll('[data-parallax-speed]');
+  function init() {
+    console.log('[webflow-scripts] parallax loaded');
 
-    items.forEach((item) => {
-      const speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
-      // Convert speed to a y offset: higher speed = more movement
-      const yPercent = speed * 100;
+    document.querySelectorAll('[data-parallax]').forEach(function (section) {
+      var items = section.querySelectorAll('[data-parallax-speed]');
+
+      items.forEach(function (item) {
+        var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
+        var yPercent = speed * 100;
+
+        gsap.fromTo(
+          item,
+          { yPercent: -yPercent / 2 },
+          {
+            yPercent: yPercent / 2,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          }
+        );
+      });
+    });
+
+    document.querySelectorAll('[data-parallax-bg]').forEach(function (el) {
+      var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
+      var yPercent = speed * 50;
 
       gsap.fromTo(
-        item,
-        { yPercent: -yPercent / 2 },
+        el,
+        { backgroundPositionY: '-' + yPercent + '%' },
         {
-          yPercent: yPercent / 2,
+          backgroundPositionY: yPercent + '%',
           ease: 'none',
           scrollTrigger: {
-            trigger: section,
+            trigger: el,
             start: 'top bottom',
             end: 'bottom top',
             scrub: true,
@@ -35,36 +55,11 @@ function init() {
         }
       );
     });
-  });
+  }
 
-  // --- Page-wide background parallax ---
-  // Usage: <div data-parallax-bg data-parallax-speed="0.3">
-  //   Background image moves slower than scroll (classic parallax)
-  // </div>
-
-  document.querySelectorAll('[data-parallax-bg]').forEach((el) => {
-    const speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
-    const yPercent = speed * 50;
-
-    gsap.fromTo(
-      el,
-      { backgroundPositionY: `-${yPercent}%` },
-      {
-        backgroundPositionY: `${yPercent}%`,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        },
-      }
-    );
-  });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

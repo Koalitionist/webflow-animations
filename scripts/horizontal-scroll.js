@@ -1,46 +1,45 @@
-import { gsap } from './gsap-utils.js';
+(function () {
+  var gsap = window.gsap;
+  var ScrollTrigger = window.ScrollTrigger;
 
-function init() {
-  console.log('[webflow-scripts] horizontal-scroll loaded');
+  if (!gsap || !ScrollTrigger) {
+    console.error('[webflow-scripts] horizontal-scroll: gsap or ScrollTrigger not found on window');
+    return;
+  }
 
-  // Usage:
-  // <section data-horizontal-scroll>
-  //   <div data-horizontal-track>
-  //     <div>Card 1</div>
-  //     <div>Card 2</div>
-  //     <div>Card 3</div>
-  //   </div>
-  // </section>
-  //
-  // Optional: data-horizontal-speed="0.5" on the section to control scroll length
-  //   1 = default, 0.5 = faster scroll, 2 = slower/longer scroll
+  gsap.registerPlugin(ScrollTrigger);
 
-  document.querySelectorAll('[data-horizontal-scroll]').forEach((section) => {
-    const track = section.querySelector('[data-horizontal-track]');
-    if (!track) return;
+  function init() {
+    console.log('[webflow-scripts] horizontal-scroll loaded');
 
-    const speed = parseFloat(section.dataset.horizontalSpeed) || 1;
+    document.querySelectorAll('[data-horizontal-scroll]').forEach(function (section) {
+      var track = section.querySelector('[data-horizontal-track]');
+      if (!track) return;
 
-    // Calculate how far to scroll: track width minus the viewport
-    const getScrollDistance = () => -(track.scrollWidth - window.innerWidth);
+      var speed = parseFloat(section.dataset.horizontalSpeed) || 1;
 
-    gsap.to(track, {
-      x: getScrollDistance,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: () => `+=${Math.abs(getScrollDistance()) * speed}`,
-        pin: true,
-        scrub: true,
-        invalidateOnRefresh: true,
-      },
+      var getScrollDistance = function () {
+        return -(track.scrollWidth - window.innerWidth);
+      };
+
+      gsap.to(track, {
+        x: getScrollDistance,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: function () { return '+=' + Math.abs(getScrollDistance()) * speed; },
+          pin: true,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
     });
-  });
-}
+  }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "mkdir -p dist && cp scripts/parallax.js scripts/hero-animation.js scripts/horizontal-scroll.js scripts/stagger-up.js dist/",
     "preview": "vite preview"
   },
   "dependencies": {

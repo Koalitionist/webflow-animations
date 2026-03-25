@@ -1,29 +1,37 @@
-import { gsap } from './gsap-utils.js';
+(function () {
+  var gsap = window.gsap;
+  var ScrollTrigger = window.ScrollTrigger;
 
-// Wait for DOM ready
-function init() {
-  console.log('[webflow-scripts] hero-animation loaded');
+  if (!gsap || !ScrollTrigger) {
+    console.error('[webflow-scripts] hero-animation: gsap or ScrollTrigger not found on window');
+    return;
+  }
 
-  // Example: fade-in + slide-up for elements with [data-animate="fade-up"]
-  const elements = document.querySelectorAll('[data-animate="fade-up"]');
+  gsap.registerPlugin(ScrollTrigger);
 
-  elements.forEach((el) => {
-    gsap.from(el, {
-      y: 60,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 85%',
-        toggleActions: 'play none none none',
-      },
+  function init() {
+    console.log('[webflow-scripts] hero-animation loaded');
+
+    var elements = document.querySelectorAll('[data-animate="fade-up"]');
+
+    elements.forEach(function (el) {
+      gsap.from(el, {
+        y: 60,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+      });
     });
-  });
-}
+  }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
