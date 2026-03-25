@@ -1,7 +1,4 @@
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap } from './gsap-utils.js';
 
 function init() {
   console.log('[webflow-scripts] horizontal-scroll loaded');
