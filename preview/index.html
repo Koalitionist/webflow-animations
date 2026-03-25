@@ -30,8 +30,6 @@
     th { color: #999; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
     td code { font-size: 0.85em; }
 
-    .script-link { display: inline-block; margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
-
     .setup-box { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
     .setup-box h3 { margin-top: 0; }
 
@@ -42,41 +40,20 @@
   <div class="container">
 
     <h1>Webflow Animation Scripts</h1>
-    <p class="subtitle">Drop-in GSAP animations controlled via data attributes. No code changes in Webflow needed — just add attributes.</p>
+    <p class="subtitle">Drop-in GSAP animations controlled via data attributes. One script, all animations. Just add attributes in Webflow.</p>
 
     <div class="setup-box">
       <h3>Quick Setup</h3>
-      <p>Add the script tag for any module to your Webflow page's custom code (before <code>&lt;/body&gt;</code>):</p>
-      <pre><code>&lt;script src="https://webflow-scripts-two.vercel.app/SCRIPT_NAME.js"&gt;&lt;/script&gt;</code></pre>
-      <p>Then add the relevant <code>data-*</code> attributes to your Webflow elements. That's it.</p>
-      <p style="opacity:0.5; font-size:0.85rem;">For local development, replace the URL with <code>http://localhost:3333/scripts/SCRIPT_NAME.js</code></p>
+      <p>Add this single script tag to your Webflow page or site-wide custom code (before <code>&lt;/body&gt;</code>):</p>
+      <pre><code>&lt;script src="https://webflow-scripts-two.vercel.app/index.js"&gt;&lt;/script&gt;</code></pre>
+      <p>Then add <code>data-*</code> attributes to your Webflow elements. All animations below are included in this one file.</p>
+      <p style="opacity:0.5; font-size:0.85rem;">For local development: <code>&lt;script src="http://localhost:3333/dist/index.js"&gt;&lt;/script&gt;</code></p>
+      <p style="opacity:0.5; font-size:0.85rem;">Start dev server: <code>cd webflow-scripts && npm run dev</code></p>
     </div>
-
-    <!-- HERO ANIMATION -->
-    <h2>hero-animation <span class="badge">scroll-triggered</span></h2>
-    <p>Fade-in + slide-up animation for elements as they enter the viewport.</p>
-    <a class="script-link" href="/preview/hero-animation.html">View preview &rarr;</a>
-
-    <h3>Script tag</h3>
-    <pre><code>&lt;script src="https://webflow-scripts-two.vercel.app/hero-animation.js"&gt;&lt;/script&gt;</code></pre>
-
-    <h3>Attributes</h3>
-    <table>
-      <tr><th>Attribute</th><th>Where</th><th>What it does</th></tr>
-      <tr>
-        <td><code>data-animate="fade-up"</code></td>
-        <td>Any element</td>
-        <td>Element fades in and slides up 60px when it enters the viewport</td>
-      </tr>
-    </table>
 
     <!-- PARALLAX -->
     <h2>parallax <span class="badge">scroll-driven</span></h2>
     <p>Two modes: per-element parallax within a section, and background-image parallax.</p>
-    <a class="script-link" href="/preview/parallax.html">View preview &rarr;</a>
-
-    <h3>Script tag</h3>
-    <pre><code>&lt;script src="https://webflow-scripts-two.vercel.app/parallax.js"&gt;&lt;/script&gt;</code></pre>
 
     <h3>Section parallax (elements move at different rates)</h3>
     <pre><code>&lt;div data-parallax&gt;
@@ -118,13 +95,25 @@
       </tr>
     </table>
 
+    <!-- HERO ANIMATION -->
+    <h2>hero-animation <span class="badge">scroll-triggered</span></h2>
+    <p>Fade-in + slide-up animation for elements as they enter the viewport.</p>
+
+    <h3>Usage</h3>
+    <pre><code>&lt;div data-animate="fade-up"&gt;This will fade in and slide up&lt;/div&gt;</code></pre>
+
+    <table>
+      <tr><th>Attribute</th><th>Where</th><th>What it does</th></tr>
+      <tr>
+        <td><code>data-animate="fade-up"</code></td>
+        <td>Any element</td>
+        <td>Element fades in and slides up 60px when it enters the viewport</td>
+      </tr>
+    </table>
+
     <!-- HORIZONTAL SCROLL -->
     <h2>horizontal-scroll <span class="badge">pinned</span></h2>
     <p>Pins a section and scrolls its content horizontally as the user scrolls vertically.</p>
-    <a class="script-link" href="/preview/horizontal-scroll.html">View preview &rarr;</a>
-
-    <h3>Script tag</h3>
-    <pre><code>&lt;script src="https://webflow-scripts-two.vercel.app/horizontal-scroll.js"&gt;&lt;/script&gt;</code></pre>
 
     <h3>Structure</h3>
     <pre><code>&lt;section data-horizontal-scroll&gt;
@@ -175,10 +164,6 @@
     <!-- STAGGER UP -->
     <h2>stagger-up <span class="badge">scroll-triggered</span></h2>
     <p>Children of a container stagger up from below with rotation and x offset.</p>
-    <a class="script-link" href="/preview/stagger-up.html">View preview &rarr;</a>
-
-    <h3>Script tag</h3>
-    <pre><code>&lt;script src="https://webflow-scripts-two.vercel.app/stagger-up.js"&gt;&lt;/script&gt;</code></pre>
 
     <h3>Usage</h3>
     <pre><code>&lt;div data-stagger-up&gt;
@@ -192,7 +177,7 @@
       <tr><th>Attribute</th><th>Default</th><th>What it does</th></tr>
       <tr>
         <td><code>data-stagger-up</code></td>
-        <td>—</td>
+        <td>--</td>
         <td>Enables the stagger animation on direct children</td>
       </tr>
       <tr>
@@ -218,6 +203,20 @@
     </table>
 
     <p style="margin-top: 2rem; opacity: 0.3; font-size: 0.85rem;">The parent gets <code>overflow: hidden</code> automatically so children are clipped during animation.</p>
+
+    <!-- DEVELOPMENT -->
+    <h2 style="border-top-color: #333;">Development</h2>
+    <p>Source: <a href="https://github.com/Koalitionist/webflow-animations">github.com/Koalitionist/webflow-animations</a></p>
+
+    <h3>Local dev</h3>
+    <pre><code>npm run dev      # Start Vite dev server on port 3333
+npm run build    # Build dist/index.js with esbuild</code></pre>
+
+    <h3>Adding a new animation</h3>
+    <p>Add a new IIFE section in <code>scripts/index.js</code>. Use the bundled <code>gsap</code> and <code>ScrollTrigger</code> variables directly (they're in scope). Query elements by <code>data-*</code> attributes, create animations, and wrap in an element-existence check so it's a no-op on pages without those elements.</p>
+
+    <h3>Architecture</h3>
+    <p>Single <code>index.js</code> bundle built with esbuild. Bundles its own GSAP 3.14.2 + ScrollTrigger to avoid conflicts with Webflow's mismatched GSAP globals. Webflow's <code>window.gsap</code> is temporarily hidden during bundle initialization, then restored.</p>
 
   </div>
 </body>
