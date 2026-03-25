@@ -3,47 +3,30 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Also expose for any standalone scripts
+// Expose on a separate namespace (Webflow's globals are saved/restored by the build wrapper)
 window._gsap = gsap;
 window._ScrollTrigger = ScrollTrigger;
 
 // ---- PARALLAX ----
 (function () {
-  function initParallax() {
-    document.querySelectorAll('[data-parallax]').forEach(function (section) {
-      section.querySelectorAll('[data-parallax-speed]').forEach(function (item) {
-        var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
-        var range = speed * 100;
+  var sections = document.querySelectorAll('[data-parallax], [data-parallax-bg]');
+  if (!sections.length) return;
 
-        gsap.fromTo(
-          item,
-          { yPercent: -range / 2 },
-          {
-            yPercent: range / 2,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true,
-            },
-          }
-        );
-      });
-    });
+  console.log('[webflow-scripts] parallax loaded');
 
-    document.querySelectorAll('[data-parallax-bg]').forEach(function (el) {
-      var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
-      var range = speed * 50;
+  document.querySelectorAll('[data-parallax]').forEach(function (section) {
+    section.querySelectorAll('[data-parallax-speed]').forEach(function (item) {
+      var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
+      var range = speed * 100;
 
       gsap.fromTo(
-        el,
-        { backgroundPositionY: '-' + range + '%' },
+        item,
+        { yPercent: -range / 2 },
         {
-          backgroundPositionY: range + '%',
+          yPercent: range / 2,
           ease: 'none',
           scrollTrigger: {
-            trigger: el,
+            trigger: section,
             start: 'top bottom',
             end: 'bottom top',
             scrub: true,
@@ -51,12 +34,27 @@ window._ScrollTrigger = ScrollTrigger;
         }
       );
     });
-  }
+  });
 
-  if (document.querySelectorAll('[data-parallax], [data-parallax-bg]').length) {
-    initParallax();
-    console.log('[webflow-scripts] parallax loaded');
-  }
+  document.querySelectorAll('[data-parallax-bg]').forEach(function (el) {
+    var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
+    var range = speed * 50;
+
+    gsap.fromTo(
+      el,
+      { backgroundPositionY: '-' + range + '%' },
+      {
+        backgroundPositionY: range + '%',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      }
+    );
+  });
 })();
 
 // ---- HERO ANIMATION ----
@@ -68,7 +66,6 @@ window._ScrollTrigger = ScrollTrigger;
 
   els.forEach(function (el) {
     gsap.set(el, { y: 60, opacity: 0 });
-
     ScrollTrigger.create({
       trigger: el,
       start: 'top 85%',
@@ -92,7 +89,6 @@ window._ScrollTrigger = ScrollTrigger;
     if (!track) return;
 
     var speed = parseFloat(section.dataset.horizontalSpeed) || 1;
-
     var getScrollDistance = function () {
       return -(track.scrollWidth - window.innerWidth);
     };
