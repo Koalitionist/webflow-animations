@@ -1,52 +1,72 @@
 (function () {
-  // Wait for Webflow to be fully initialized
-  window.Webflow = window.Webflow || [];
-  window.Webflow.push(function () {
-    var gsap = window.gsap;
-    var ScrollTrigger = window.ScrollTrigger;
+  'use strict';
 
-    if (!gsap || !ScrollTrigger) {
-      console.error('[webflow-scripts] parallax: gsap or ScrollTrigger not found');
-      return;
-    }
+  function init() {
+    console.log('[webflow-scripts] parallax loaded');
 
-    console.log('[webflow-scripts] parallax init (Webflow ready)');
+    var sections = document.querySelectorAll('[data-parallax]');
+    var bgElements = document.querySelectorAll('[data-parallax-bg]');
 
-    document.querySelectorAll('[data-parallax]').forEach(function (section) {
-      var items = section.querySelectorAll('[data-parallax-speed]');
+    if (!sections.length && !bgElements.length) return;
 
-      items.forEach(function (item) {
-        var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
-        var range = speed * 100;
+    var items = [];
 
-        ScrollTrigger.create({
+    sections.forEach(function (section) {
+      section.querySelectorAll('[data-parallax-speed]').forEach(function (el) {
+        items.push({
+          el: el,
           trigger: section,
-          start: 'top bottom',
-          end: 'bottom top',
-          onUpdate: function (self) {
-            var y = (self.progress - 0.5) * range;
-            item.style.transform = 'translateY(' + y + 'px)';
-          },
+          speed: parseFloat(el.dataset.parallaxSpeed) || 0.5,
+          type: 'transform',
         });
       });
     });
 
-    document.querySelectorAll('[data-parallax-bg]').forEach(function (el) {
-      var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
-      var range = speed * 50;
-
-      ScrollTrigger.create({
+    bgElements.forEach(function (el) {
+      items.push({
+        el: el,
         trigger: el,
-        start: 'top bottom',
-        end: 'bottom top',
-        onUpdate: function (self) {
-          var y = (self.progress - 0.5) * range;
-          el.style.backgroundPositionY = y + '%';
-        },
+        speed: parseFloat(el.dataset.parallaxSpeed) || 0.3,
+        type: 'background',
       });
     });
 
-    // Force refresh after creating triggers
-    ScrollTrigger.refresh(true);
-  });
+    var ticking = false;
+
+    function update() {
+      var viewH = window.innerHeight;
+
+      items.forEach(function (item) {
+        var rect = item.trigger.getBoundingClientRect();
+        var progress = 1 - rect.bottom / (viewH + rect.height);
+        progress = Math.max(0, Math.min(1, progress));
+
+        if (item.type === 'transform') {
+          var y = (progress - 0.5) * item.speed * 100;
+          item.el.style.transform = 'translateY(' + y + 'px)';
+        } else {
+          var bgY = (progress - 0.5) * item.speed * 50;
+          item.el.style.backgroundPositionY = bgY + '%';
+        }
+      });
+
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
