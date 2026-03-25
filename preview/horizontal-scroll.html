@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview: Horizontal Scroll</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #fff; }
+
+    .spacer { height: 80vh; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; opacity: 0.3; }
+
+    /* The pinned section needs full viewport height */
+    [data-horizontal-scroll] {
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Track: flex row of cards, no wrapping */
+    [data-horizontal-track] {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: 100%;
+      padding: 0 4rem;
+      width: max-content;
+    }
+
+    .card {
+      flex-shrink: 0;
+      width: 400px;
+      height: 500px;
+      background: #1a1a1a;
+      border-radius: 16px;
+      border: 1px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.4;
+    }
+    .card-content { position: relative; z-index: 1; }
+    .card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .card p { opacity: 0.7; line-height: 1.5; }
+
+    .intro { padding: 0 4rem; display: flex; flex-direction: column; justify-content: center; }
+    .intro h2 { font-size: 3rem; margin-bottom: 0.5rem; }
+    .intro p { opacity: 0.5; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <div class="spacer">Scroll down to see horizontal scroll</div>
+
+  <section data-horizontal-scroll>
+    <div data-horizontal-track>
+      <div class="intro">
+        <h2>Our Work</h2>
+        <p>Scroll to explore projects</p>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80" alt="" />
+        <div class="card-content">
+          <h3>Project Alpha</h3>
+          <p>A brief description of this project and what makes it interesting.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" alt="" />
+        <div class="card-content">
+          <h3>Project Beta</h3>
+          <p>Another project showcase with a different vibe.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80" alt="" />
+        <div class="card-content">
+          <h3>Project Gamma</h3>
+          <p>The third card slides in as you keep scrolling.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&q=80" alt="" />
+        <div class="card-content">
+          <h3>Project Delta</h3>
+          <p>And a fourth to show it handles any number of cards.</p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&q=80" alt="" />
+        <div class="card-content">
+          <h3>Project Epsilon</h3>
+          <p>Keep adding cards — the scroll distance adjusts automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="spacer">Content continues after the horizontal section</div>
+  <div class="spacer">&nbsp;</div>
+
+  <script type="module" src="/scripts/horizontal-scroll.js"></script>
+</body>
+</html>
