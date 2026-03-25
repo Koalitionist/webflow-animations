@@ -7,9 +7,10 @@ gsap.registerPlugin(ScrollTrigger);
 window._gsap = gsap;
 window._ScrollTrigger = ScrollTrigger;
 
-// Our GSAP instance has its own ticker separate from Webflow's.
-// We need to pump ScrollTrigger.update() on every frame so it
-// picks up scroll position changes.
-gsap.ticker.add(function () {
+// Our GSAP instance is separate from Webflow's, so its ScrollTrigger
+// doesn't receive scroll events from Webflow's ticker. We run our own
+// rAF loop to keep it in sync.
+(function tick() {
   ScrollTrigger.update();
-});
+  requestAnimationFrame(tick);
+})();
