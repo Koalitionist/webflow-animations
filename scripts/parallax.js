@@ -15,47 +15,44 @@
 
       items.forEach(function (item) {
         var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
-        var yPercent = speed * 100;
-
-        var tween = gsap.fromTo(
-          item,
-          { yPercent: -yPercent / 2 },
-          { yPercent: yPercent / 2, ease: 'none', paused: true }
-        );
+        var range = speed * 100;
 
         ScrollTrigger.create({
           trigger: section,
           start: 'top bottom',
           end: 'bottom top',
-          scrub: true,
-          animation: tween,
+          onUpdate: function (self) {
+            var y = (self.progress - 0.5) * range;
+            item.style.transform = 'translateY(' + y + 'px)';
+          },
         });
       });
     });
 
     document.querySelectorAll('[data-parallax-bg]').forEach(function (el) {
       var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
-      var yPercent = speed * 50;
-
-      var tween = gsap.fromTo(
-        el,
-        { backgroundPositionY: '-' + yPercent + '%' },
-        { backgroundPositionY: yPercent + '%', ease: 'none', paused: true }
-      );
+      var range = speed * 50;
 
       ScrollTrigger.create({
         trigger: el,
         start: 'top bottom',
         end: 'bottom top',
-        scrub: true,
-        animation: tween,
+        onUpdate: function (self) {
+          var y = (self.progress - 0.5) * range;
+          el.style.backgroundPositionY = y + '%';
+        },
       });
     });
+
+    // Force ScrollTrigger to pick up new triggers
+    ScrollTrigger.refresh();
+    ScrollTrigger.update();
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    init();
+    // Delay slightly to ensure Webflow's GSAP/ScrollTrigger is fully initialized
+    setTimeout(init, 100);
   }
 })();
