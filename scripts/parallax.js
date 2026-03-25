@@ -15,20 +15,14 @@
         var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
         var range = speed * 100;
 
-        gsap.fromTo(
-          item,
-          { yPercent: -range / 2 },
-          {
-            yPercent: range / 2,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true,
-            },
-          }
-        );
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          onUpdate: function (self) {
+            gsap.set(item, { yPercent: (self.progress - 0.5) * range });
+          },
+        });
       });
     });
 
@@ -36,20 +30,14 @@
       var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
       var range = speed * 50;
 
-      gsap.fromTo(
-        el,
-        { backgroundPositionY: '-' + range + '%' },
-        {
-          backgroundPositionY: range + '%',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        }
-      );
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: function (self) {
+          el.style.backgroundPositionY = (self.progress - 0.5) * range + '%';
+        },
+      });
     });
   }
 

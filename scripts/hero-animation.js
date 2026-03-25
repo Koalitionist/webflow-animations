@@ -11,15 +11,14 @@
     console.log('[webflow-scripts] hero-animation loaded');
 
     document.querySelectorAll('[data-animate="fade-up"]').forEach(function (el) {
-      gsap.from(el, {
-        y: 60,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
+      gsap.set(el, { y: 60, opacity: 0 });
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        once: true,
+        onEnter: function () {
+          gsap.to(el, { y: 0, opacity: 1, duration: 1, ease: 'power3.out' });
         },
       });
     });

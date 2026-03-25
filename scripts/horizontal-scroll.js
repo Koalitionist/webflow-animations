@@ -20,18 +20,17 @@
         return -(track.scrollWidth - window.innerWidth);
       };
 
-      gsap.to(track, {
-        x: getScrollDistance,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: function () {
-            return '+=' + Math.abs(getScrollDistance()) * speed;
-          },
-          pin: true,
-          scrub: true,
-          invalidateOnRefresh: true,
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: function () {
+          return '+=' + Math.abs(getScrollDistance()) * speed;
+        },
+        pin: true,
+        scrub: true,
+        invalidateOnRefresh: true,
+        onUpdate: function (self) {
+          gsap.set(track, { x: self.progress * getScrollDistance() });
         },
       });
     });
