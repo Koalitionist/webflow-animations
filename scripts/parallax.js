@@ -1,14 +1,16 @@
 (function () {
-  var gsap = window.gsap;
-  var ScrollTrigger = window.ScrollTrigger;
+  // Wait for Webflow to be fully initialized
+  window.Webflow = window.Webflow || [];
+  window.Webflow.push(function () {
+    var gsap = window.gsap;
+    var ScrollTrigger = window.ScrollTrigger;
 
-  if (!gsap || !ScrollTrigger) {
-    console.error('[webflow-scripts] parallax: gsap or ScrollTrigger not found');
-    return;
-  }
+    if (!gsap || !ScrollTrigger) {
+      console.error('[webflow-scripts] parallax: gsap or ScrollTrigger not found');
+      return;
+    }
 
-  function init() {
-    console.log('[webflow-scripts] parallax loaded');
+    console.log('[webflow-scripts] parallax init (Webflow ready)');
 
     document.querySelectorAll('[data-parallax]').forEach(function (section) {
       var items = section.querySelectorAll('[data-parallax-speed]');
@@ -44,15 +46,7 @@
       });
     });
 
-    // Force ScrollTrigger to pick up new triggers
-    ScrollTrigger.refresh();
-    ScrollTrigger.update();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    // Delay slightly to ensure Webflow's GSAP/ScrollTrigger is fully initialized
-    setTimeout(init, 100);
-  }
+    // Force refresh after creating triggers
+    ScrollTrigger.refresh(true);
+  });
 })();
