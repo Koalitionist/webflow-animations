@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webflow Animation Scripts — Docs</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; line-height: 1.6; }
+    a { color: #7eb8ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+    h1 { font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; }
+    .subtitle { opacity: 0.5; margin-bottom: 3rem; font-size: 1.1rem; }
+
+    h2 { font-size: 1.5rem; color: #fff; margin: 3rem 0 1rem; padding-top: 2rem; border-top: 1px solid #222; }
+    h2:first-of-type { border-top: none; padding-top: 0; }
+    h3 { font-size: 1.1rem; color: #ccc; margin: 1.5rem 0 0.5rem; }
+
+    p { margin-bottom: 1rem; }
+
+    code { background: #1a1a1a; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; color: #c8d6e5; }
+    pre { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 1.25rem; margin: 1rem 0 1.5rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.7; }
+    pre code { background: none; padding: 0; }
+
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 0.6rem 1rem; border-bottom: 1px solid #1a1a1a; }
+    th { color: #999; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td code { font-size: 0.85em; }
+
+    .script-link { display: inline-block; margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
+
+    .setup-box { background: #111; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; }
+    .setup-box h3 { margin-top: 0; }
+
+    .badge { display: inline-block; background: #1a2a1a; color: #6fcf6f; font-size: 0.75rem; padding: 0.15em 0.5em; border-radius: 4px; margin-left: 0.5rem; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Webflow Animation Scripts</h1>
+    <p class="subtitle">Drop-in GSAP animations controlled via data attributes. No code changes in Webflow needed — just add attributes.</p>
+
+    <div class="setup-box">
+      <h3>Quick Setup</h3>
+      <p>Add the script tag for any module to your Webflow page's custom code (before <code>&lt;/body&gt;</code>):</p>
+      <pre><code>&lt;script type="module" src="https://webflow-scripts-two.vercel.app/SCRIPT_NAME.js"&gt;&lt;/script&gt;</code></pre>
+      <p>Then add the relevant <code>data-*</code> attributes to your Webflow elements. That's it.</p>
+      <p style="opacity:0.5; font-size:0.85rem;">For local development, replace the URL with <code>http://localhost:3333/scripts/SCRIPT_NAME.js</code></p>
+    </div>
+
+    <!-- HERO ANIMATION -->
+    <h2>hero-animation <span class="badge">scroll-triggered</span></h2>
+    <p>Fade-in + slide-up animation for elements as they enter the viewport.</p>
+    <a class="script-link" href="/preview/hero-animation.html">View preview &rarr;</a>
+
+    <h3>Script tag</h3>
+    <pre><code>&lt;script type="module" src="https://webflow-scripts-two.vercel.app/hero-animation.js"&gt;&lt;/script&gt;</code></pre>
+
+    <h3>Attributes</h3>
+    <table>
+      <tr><th>Attribute</th><th>Where</th><th>What it does</th></tr>
+      <tr>
+        <td><code>data-animate="fade-up"</code></td>
+        <td>Any element</td>
+        <td>Element fades in and slides up 60px when it enters the viewport</td>
+      </tr>
+    </table>
+
+    <!-- PARALLAX -->
+    <h2>parallax <span class="badge">scroll-driven</span></h2>
+    <p>Two modes: per-element parallax within a section, and background-image parallax.</p>
+    <a class="script-link" href="/preview/parallax.html">View preview &rarr;</a>
+
+    <h3>Script tag</h3>
+    <pre><code>&lt;script type="module" src="https://webflow-scripts-two.vercel.app/parallax.js"&gt;&lt;/script&gt;</code></pre>
+
+    <h3>Section parallax (elements move at different rates)</h3>
+    <pre><code>&lt;div data-parallax&gt;
+  &lt;div data-parallax-speed="0.2"&gt;Slow element&lt;/div&gt;
+  &lt;div data-parallax-speed="0.5"&gt;Medium element&lt;/div&gt;
+  &lt;div data-parallax-speed="1.0"&gt;Fast element&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <table>
+      <tr><th>Attribute</th><th>Where</th><th>What it does</th></tr>
+      <tr>
+        <td><code>data-parallax</code></td>
+        <td>Section/wrapper</td>
+        <td>Marks the container as a parallax section</td>
+      </tr>
+      <tr>
+        <td><code>data-parallax-speed="0.5"</code></td>
+        <td>Child elements</td>
+        <td>How much the element moves. 0 = static, 0.5 = subtle, 1+ = strong, negative = reverse</td>
+      </tr>
+    </table>
+
+    <h3>Background parallax</h3>
+    <pre><code>&lt;div data-parallax-bg data-parallax-speed="0.3" style="background-image: url(…)"&gt;
+  Content over parallax background
+&lt;/div&gt;</code></pre>
+
+    <table>
+      <tr><th>Attribute</th><th>Where</th><th>What it does</th></tr>
+      <tr>
+        <td><code>data-parallax-bg</code></td>
+        <td>Element with CSS background image</td>
+        <td>Enables background-position parallax</td>
+      </tr>
+      <tr>
+        <td><code>data-parallax-speed="0.3"</code></td>
+        <td>Same element</td>
+        <td>Controls parallax intensity (default 0.3)</td>
+      </tr>
+    </table>
+
+    <!-- HORIZONTAL SCROLL -->
+    <h2>horizontal-scroll <span class="badge">pinned</span></h2>
+    <p>Pins a section and scrolls its content horizontally as the user scrolls vertically.</p>
+    <a class="script-link" href="/preview/horizontal-scroll.html">View preview &rarr;</a>
+
+    <h3>Script tag</h3>
+    <pre><code>&lt;script type="module" src="https://webflow-scripts-two.vercel.app/horizontal-scroll.js"&gt;&lt;/script&gt;</code></pre>
+
+    <h3>Structure</h3>
+    <pre><code>&lt;section data-horizontal-scroll&gt;
+  &lt;div data-horizontal-track&gt;
+    &lt;div&gt;Card 1&lt;/div&gt;
+    &lt;div&gt;Card 2&lt;/div&gt;
+    &lt;div&gt;Card 3&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+
+    <h3>Required Webflow styles</h3>
+    <table>
+      <tr><th>Element</th><th>Styles needed</th></tr>
+      <tr>
+        <td>Section (<code>data-horizontal-scroll</code>)</td>
+        <td><code>height: 100vh</code>, <code>overflow: hidden</code></td>
+      </tr>
+      <tr>
+        <td>Track (<code>data-horizontal-track</code>)</td>
+        <td><code>display: flex</code>, <code>flex-wrap: nowrap</code>, <code>height: 100%</code></td>
+      </tr>
+      <tr>
+        <td>Cards (children)</td>
+        <td>Fixed width (e.g. <code>400px</code>), <code>flex-shrink: 0</code></td>
+      </tr>
+    </table>
+
+    <h3>Attributes</h3>
+    <table>
+      <tr><th>Attribute</th><th>Where</th><th>What it does</th></tr>
+      <tr>
+        <td><code>data-horizontal-scroll</code></td>
+        <td>Section wrapper</td>
+        <td>Marks section for pin + horizontal scroll</td>
+      </tr>
+      <tr>
+        <td><code>data-horizontal-track</code></td>
+        <td>Inner flex container</td>
+        <td>The element that moves horizontally</td>
+      </tr>
+      <tr>
+        <td><code>data-horizontal-speed="1"</code></td>
+        <td>Section (optional)</td>
+        <td>Scroll multiplier. 0.5 = faster, 2 = slower/longer</td>
+      </tr>
+    </table>
+
+    <!-- STAGGER UP -->
+    <h2>stagger-up <span class="badge">scroll-triggered</span></h2>
+    <p>Children of a container stagger up from below with rotation and x offset.</p>
+    <a class="script-link" href="/preview/stagger-up.html">View preview &rarr;</a>
+
+    <h3>Script tag</h3>
+    <pre><code>&lt;script type="module" src="https://webflow-scripts-two.vercel.app/stagger-up.js"&gt;&lt;/script&gt;</code></pre>
+
+    <h3>Usage</h3>
+    <pre><code>&lt;div data-stagger-up&gt;
+  &lt;div&gt;Child 1&lt;/div&gt;
+  &lt;div&gt;Child 2&lt;/div&gt;
+  &lt;div&gt;Child 3&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>Attributes (all on the parent container)</h3>
+    <table>
+      <tr><th>Attribute</th><th>Default</th><th>What it does</th></tr>
+      <tr>
+        <td><code>data-stagger-up</code></td>
+        <td>—</td>
+        <td>Enables the stagger animation on direct children</td>
+      </tr>
+      <tr>
+        <td><code>data-stagger-delay="0.15"</code></td>
+        <td>0.15</td>
+        <td>Delay in seconds between each child</td>
+      </tr>
+      <tr>
+        <td><code>data-stagger-duration="0.8"</code></td>
+        <td>0.8</td>
+        <td>Animation duration per child</td>
+      </tr>
+      <tr>
+        <td><code>data-stagger-rotation="6"</code></td>
+        <td>6</td>
+        <td>Starting rotation in degrees</td>
+      </tr>
+      <tr>
+        <td><code>data-stagger-x="30"</code></td>
+        <td>30</td>
+        <td>Starting horizontal offset in px</td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 2rem; opacity: 0.3; font-size: 0.85rem;">The parent gets <code>overflow: hidden</code> automatically so children are clipped during animation.</p>
+
+  </div>
+</body>
+</html>
