@@ -1,13 +1,11 @@
 (function () {
-  const gsap = window.gsap;
-  const ScrollTrigger = window.ScrollTrigger;
+  var gsap = window.gsap;
+  var ScrollTrigger = window.ScrollTrigger;
 
   if (!gsap || !ScrollTrigger) {
-    console.error('[webflow-scripts] parallax: gsap or ScrollTrigger not found on window');
+    console.error('[webflow-scripts] parallax: gsap or ScrollTrigger not found');
     return;
   }
-
-  gsap.registerPlugin(ScrollTrigger);
 
   function init() {
     console.log('[webflow-scripts] parallax loaded');
@@ -19,20 +17,19 @@
         var speed = parseFloat(item.dataset.parallaxSpeed) || 0.5;
         var yPercent = speed * 100;
 
-        gsap.fromTo(
+        var tween = gsap.fromTo(
           item,
           { yPercent: -yPercent / 2 },
-          {
-            yPercent: yPercent / 2,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true,
-            },
-          }
+          { yPercent: yPercent / 2, ease: 'none', paused: true }
         );
+
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+          animation: tween,
+        });
       });
     });
 
@@ -40,20 +37,19 @@
       var speed = parseFloat(el.dataset.parallaxSpeed) || 0.3;
       var yPercent = speed * 50;
 
-      gsap.fromTo(
+      var tween = gsap.fromTo(
         el,
         { backgroundPositionY: '-' + yPercent + '%' },
-        {
-          backgroundPositionY: yPercent + '%',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        }
+        { backgroundPositionY: yPercent + '%', ease: 'none', paused: true }
       );
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true,
+        animation: tween,
+      });
     });
   }
 

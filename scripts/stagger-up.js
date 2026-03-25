@@ -3,11 +3,9 @@
   var ScrollTrigger = window.ScrollTrigger;
 
   if (!gsap || !ScrollTrigger) {
-    console.error('[webflow-scripts] stagger-up: gsap or ScrollTrigger not found on window');
+    console.error('[webflow-scripts] stagger-up: gsap or ScrollTrigger not found');
     return;
   }
-
-  gsap.registerPlugin(ScrollTrigger);
 
   function init() {
     console.log('[webflow-scripts] stagger-up loaded');
@@ -23,7 +21,7 @@
 
       container.style.overflow = 'hidden';
 
-      gsap.from(children, {
+      var tween = gsap.from(children, {
         yPercent: 100,
         x: xOffset,
         rotation: rotation,
@@ -31,11 +29,14 @@
         duration: duration,
         ease: 'power3.out',
         stagger: delay,
-        scrollTrigger: {
-          trigger: container,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        },
+        paused: true,
+      });
+
+      ScrollTrigger.create({
+        trigger: container,
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+        animation: tween,
       });
     });
   }
