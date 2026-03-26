@@ -98,11 +98,22 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var visible = parseInt(section.dataset.horizontalVisible) || 3;
     var gap = 20; // px gap between cards
 
-    // Auto-apply styles — break out of any Webflow container
+    // Auto-apply styles
     section.style.height = '100vh';
     section.style.overflow = 'hidden';
     section.style.width = '100vw';
     section.style.marginLeft = 'calc(-50vw + 50%)';
+
+    // Force all elements between section and track to be full width
+    var el = track.parentElement;
+    while (el && el !== section) {
+      el.style.maxWidth = 'none';
+      el.style.width = '100%';
+      el.style.padding = '0';
+      el.style.margin = '0';
+      el = el.parentElement;
+    }
+
     track.style.position = 'relative';
     track.style.height = '100%';
     track.style.display = 'flex';
@@ -111,6 +122,8 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     track.style.gap = gap + 'px';
     track.style.paddingLeft = gap + 'px';
     track.style.paddingRight = gap + 'px';
+    track.style.maxWidth = 'none';
+    track.style.width = '100%';
 
     // Cards share the viewport width
     var cardWidth = (window.innerWidth - gap * (visible + 1)) / visible;
