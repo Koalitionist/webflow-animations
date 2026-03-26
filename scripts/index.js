@@ -122,59 +122,53 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
 
     // Build a GSAP timeline for the card reveal animation
     var tl = gsap.timeline({ paused: true });
+    var totalDur = cards.length;
 
-    // Set initial state: cards start slightly scaled down, shifted right, faded
-    cards.forEach(function (card, i) {
-      gsap.set(card, {
-        scale: 0.85,
-        opacity: 0.3,
-        rotateY: -8,
-        transformOrigin: 'left center',
+    // First card starts fully visible
+    gsap.set(cards[0], { scale: 1, opacity: 1, transformOrigin: 'center center' });
+
+    // All other cards start small and faded
+    for (var i = 1; i < cards.length; i++) {
+      gsap.set(cards[i], {
+        scale: 0.8,
+        opacity: 0,
+        transformOrigin: 'center center',
       });
-    });
+    }
 
-    // Animate first card in immediately
-    tl.to(cards[0], { scale: 1, opacity: 1, rotateY: 0, duration: 0.5, ease: 'power2.out' }, 0);
+    // Build timeline: each card transition takes 1 unit of time
+    for (var i = 0; i < cards.length - 1; i++) {
+      var t = i; // timeline position
 
-    // For each card transition: move track left + animate current card out + next card in
-    var progressPerCard = 1 / Math.max(cards.length - 1, 1);
-
-    cards.forEach(function (card, i) {
-      if (i === 0) return;
-
-      var pos = i * progressPerCard;
-
-      // Move the track to reveal next card
+      // Move the track left to reveal next card
       tl.to(track, {
-        x: -(scrollDistance * (i / (cards.length - 1))),
-        duration: progressPerCard,
+        x: -(scrollDistance * ((i + 1) / (cards.length - 1))),
+        duration: 1,
         ease: 'none',
-      }, pos - progressPerCard);
+      }, t);
 
-      // Current card zooms out slightly and fades
-      if (i > 0) {
-        tl.to(cards[i - 1], {
-          scale: 0.9,
-          opacity: 0.6,
-          duration: progressPerCard * 0.5,
-          ease: 'power2.in',
-        }, pos - progressPerCard);
-      }
+      // Current card scales down and fades
+      tl.to(cards[i], {
+        scale: 0.85,
+        opacity: 0.4,
+        duration: 0.6,
+        ease: 'power2.in',
+      }, t);
 
-      // Next card zooms in and appears
-      tl.to(card, {
+      // Next card scales up and fades in
+      tl.to(cards[i + 1], {
         scale: 1,
         opacity: 1,
-        rotateY: 0,
-        duration: progressPerCard * 0.7,
+        duration: 0.8,
         ease: 'power2.out',
-      }, pos - progressPerCard * 0.5);
-    });
+      }, t + 0.3);
+    }
 
     // Scrub the timeline based on scroll position
+    var wrapperHeight = wrapper.offsetHeight;
+
     function updateHorizontalScroll() {
       var wrapperRect = wrapper.getBoundingClientRect();
-      var wrapperHeight = wrapper.offsetHeight;
       var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, progress));
       tl.progress(progress);
