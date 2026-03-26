@@ -169,7 +169,13 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
 })();
 
 // ---- REFRESH ----
-// Recalculate all trigger positions after images load and Webflow finishes layout
+// Recalculate trigger positions after page fully loads and Webflow finishes layout
 window.addEventListener('load', function () {
+  ScrollTrigger.refresh();
+});
+
+// Also refresh after Webflow's own init (may run after load)
+window.Webflow = window.Webflow || [];
+window.Webflow.push(function () {
   ScrollTrigger.refresh();
 });
