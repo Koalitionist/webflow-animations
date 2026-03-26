@@ -94,9 +94,11 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     if (!track) return;
 
     var cards = Array.from(track.children);
-    var speed = parseFloat(section.dataset.horizontalSpeed) || 1.5;
+    var speed = parseFloat(section.dataset.horizontalSpeed) || 0.8;
+    var visible = parseInt(section.dataset.horizontalVisible) || 3;
+    var gap = 20; // px gap between cards
 
-    // Auto-apply styles: stack cards on top of each other
+    // Auto-apply styles
     section.style.height = '100vh';
     section.style.overflow = 'hidden';
     track.style.position = 'relative';
@@ -104,60 +106,73 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     track.style.display = 'flex';
     track.style.alignItems = 'center';
     track.style.justifyContent = 'center';
+    track.style.gap = gap + 'px';
 
+    // Cards share the viewport width
+    var cardWidth = (window.innerWidth - gap * (visible + 1)) / visible;
     cards.forEach(function (card) {
-      card.style.position = 'absolute';
-      card.style.maxWidth = '90vw';
+      card.style.flexShrink = '0';
+      card.style.width = cardWidth + 'px';
     });
+
+    var scrollDistance = track.scrollWidth - window.innerWidth;
+    if (scrollDistance <= 0) return;
 
     // Use native sticky for pinning
     section.style.position = 'sticky';
     section.style.top = '0';
+    track.style.paddingLeft = gap + 'px';
+    track.style.paddingRight = gap + 'px';
 
     // Wrap in a tall container for scroll room
+    var steps = cards.length - visible;
     var wrapper = document.createElement('div');
-    wrapper.style.height = (cards.length * speed * window.innerHeight) + 'px';
+    wrapper.style.height = (steps * speed * window.innerHeight + window.innerHeight) + 'px';
     wrapper.style.position = 'relative';
     section.parentNode.insertBefore(wrapper, section);
     wrapper.appendChild(section);
 
-    // Build timeline: cards animate in and out
+    // Set initial card states: first `visible` are full, rest are scaled/faded
+    cards.forEach(function (card, i) {
+      if (i < visible) {
+        gsap.set(card, { scale: 1, opacity: 1 });
+      } else {
+        gsap.set(card, { scale: 0.8, opacity: 0 });
+      }
+    });
+
+    // Build timeline: slide track one card width at a time
+    // leading card exits + shrinks, new card enters + grows
     var tl = gsap.timeline({ paused: true });
+    var stepWidth = cardWidth + gap;
 
-    // First card starts visible
-    gsap.set(cards[0], { scale: 1, opacity: 1, zIndex: cards.length });
-
-    // Other cards start hidden, offset right, scaled down
-    for (var i = 1; i < cards.length; i++) {
-      gsap.set(cards[i], {
-        xPercent: 60,
-        scale: 0.75,
-        opacity: 0,
-        zIndex: cards.length - i,
-      });
-    }
-
-    // Each card transition: current slides left + shrinks, next slides in + grows
-    for (var i = 0; i < cards.length - 1; i++) {
+    for (var i = 0; i < steps; i++) {
       var t = i;
 
-      // Current card exits left and shrinks
-      tl.to(cards[i], {
-        xPercent: -60,
-        scale: 0.75,
-        opacity: 0,
+      // Slide track left by one card
+      tl.to(track, {
+        x: -(stepWidth * (i + 1)),
         duration: 1,
-        ease: 'power2.inOut',
+        ease: 'power1.inOut',
       }, t);
 
-      // Next card enters from right and grows
-      tl.to(cards[i + 1], {
-        xPercent: 0,
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.inOut',
+      // Exiting card (left side) shrinks and fades
+      tl.to(cards[i], {
+        scale: 0.85,
+        opacity: 0.3,
+        duration: 0.8,
+        ease: 'power2.in',
       }, t);
+
+      // Entering card (right side) grows and fades in
+      if (cards[i + visible]) {
+        tl.to(cards[i + visible], {
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+        }, t + 0.2);
+      }
     }
 
     // Scrub based on scroll position
@@ -167,6 +182,12 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
       var wrapperRect = wrapper.getBoundingClientRect();
       var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, progress));
+
+      // Drive track position via CSS (reliable)
+      var trackX = progress * steps * stepWidth;
+      track.style.transform = 'translateX(' + (-trackX) + 'px)';
+
+      // Drive card effects via timeline
       tl.progress(progress);
     }
 
