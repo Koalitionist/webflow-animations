@@ -136,16 +136,9 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
       });
     }
 
-    // Build timeline: each card transition takes 1 unit of time
+    // Build timeline for card zoom/fade effects only (not track movement)
     for (var i = 0; i < cards.length - 1; i++) {
-      var t = i; // timeline position
-
-      // Move the track left to reveal next card
-      tl.to(track, {
-        x: -(scrollDistance * ((i + 1) / (cards.length - 1))),
-        duration: 1,
-        ease: 'none',
-      }, t);
+      var t = i;
 
       // Current card scales down and fades
       tl.to(cards[i], {
@@ -164,13 +157,18 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
       }, t + 0.3);
     }
 
-    // Scrub the timeline based on scroll position
+    // Scrub based on scroll position
     var wrapperHeight = wrapper.offsetHeight;
 
     function updateHorizontalScroll() {
       var wrapperRect = wrapper.getBoundingClientRect();
       var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, progress));
+
+      // Move track directly via CSS (GSAP paused tweens are unreliable here)
+      track.style.transform = 'translateX(' + (-progress * scrollDistance) + 'px)';
+
+      // Scrub card animations via timeline
       tl.progress(progress);
     }
 
