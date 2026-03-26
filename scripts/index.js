@@ -106,26 +106,29 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var speed = parseFloat(section.dataset.horizontalSpeed) || 1;
     var scrollDistance = track.scrollWidth - window.innerWidth;
 
-    // Use native sticky instead of ScrollTrigger pin to avoid
-    // conflicts with Webflow's own ScrollTrigger pins
+    // Use native sticky for pinning — avoids conflicts with Webflow's ScrollTrigger pins
     section.style.position = 'sticky';
     section.style.top = '0';
 
-    // Create a spacer div after the section to provide scroll room
-    var spacer = document.createElement('div');
-    spacer.style.height = (scrollDistance * speed) + 'px';
-    section.parentNode.insertBefore(spacer, section.nextSibling);
+    // Wrap section in a tall container to create scroll room
+    var wrapper = document.createElement('div');
+    wrapper.style.height = (scrollDistance * speed + window.innerHeight) + 'px';
+    wrapper.style.position = 'relative';
+    section.parentNode.insertBefore(wrapper, section);
+    wrapper.appendChild(section);
 
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: function () {
-        return '+=' + scrollDistance * speed;
-      },
-      onUpdate: function (self) {
-        gsap.set(track, { x: -self.progress * scrollDistance });
-      },
-    });
+    // Use scroll listener with getBoundingClientRect for accurate position
+    // (avoids offset bugs from Webflow's own ScrollTrigger pins)
+    function updateHorizontalScroll() {
+      var wrapperRect = wrapper.getBoundingClientRect();
+      var wrapperHeight = wrapper.offsetHeight;
+      var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
+      progress = Math.max(0, Math.min(1, progress));
+      gsap.set(track, { x: -progress * scrollDistance });
+    }
+
+    window.addEventListener('scroll', updateHorizontalScroll, { passive: true });
+    updateHorizontalScroll();
   });
 })();
 
