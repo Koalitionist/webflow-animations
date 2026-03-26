@@ -96,84 +96,82 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var cards = Array.from(track.children);
     var speed = parseFloat(section.dataset.horizontalSpeed) || 1.5;
 
-    // Auto-apply required styles
+    // Auto-apply styles: stack cards on top of each other
     section.style.height = '100vh';
     section.style.overflow = 'hidden';
-    track.style.display = 'flex';
-    track.style.flexWrap = 'nowrap';
+    track.style.position = 'relative';
     track.style.height = '100%';
+    track.style.display = 'flex';
     track.style.alignItems = 'center';
-    cards.forEach(function (child) {
-      child.style.flexShrink = '0';
+    track.style.justifyContent = 'center';
+
+    cards.forEach(function (card) {
+      card.style.position = 'absolute';
+      card.style.maxWidth = '90vw';
     });
 
-    var scrollDistance = track.scrollWidth - window.innerWidth;
-
-    // Use native sticky for pinning — avoids conflicts with Webflow's ScrollTrigger pins
+    // Use native sticky for pinning
     section.style.position = 'sticky';
     section.style.top = '0';
 
     // Wrap in a tall container for scroll room
     var wrapper = document.createElement('div');
-    wrapper.style.height = (scrollDistance * speed + window.innerHeight) + 'px';
+    wrapper.style.height = (cards.length * speed * window.innerHeight) + 'px';
     wrapper.style.position = 'relative';
     section.parentNode.insertBefore(wrapper, section);
     wrapper.appendChild(section);
 
-    // Build a GSAP timeline for the card reveal animation
+    // Build timeline: cards animate in and out
     var tl = gsap.timeline({ paused: true });
-    var totalDur = cards.length;
 
-    // First card starts fully visible
-    gsap.set(cards[0], { scale: 1, opacity: 1, transformOrigin: 'center center' });
+    // First card starts visible
+    gsap.set(cards[0], { scale: 1, opacity: 1, zIndex: cards.length });
 
-    // All other cards start small and faded
+    // Other cards start hidden, offset right, scaled down
     for (var i = 1; i < cards.length; i++) {
       gsap.set(cards[i], {
-        scale: 0.8,
+        xPercent: 60,
+        scale: 0.75,
         opacity: 0,
-        transformOrigin: 'center center',
+        zIndex: cards.length - i,
       });
     }
 
-    // Build timeline for card zoom/fade effects only (not track movement)
+    // Each card transition: current slides left + shrinks, next slides in + grows
     for (var i = 0; i < cards.length - 1; i++) {
       var t = i;
 
-      // Current card scales down and fades
+      // Current card exits left and shrinks
       tl.to(cards[i], {
-        scale: 0.85,
-        opacity: 0.4,
-        duration: 0.6,
-        ease: 'power2.in',
+        xPercent: -60,
+        scale: 0.75,
+        opacity: 0,
+        duration: 1,
+        ease: 'power2.inOut',
       }, t);
 
-      // Next card scales up and fades in
+      // Next card enters from right and grows
       tl.to(cards[i + 1], {
+        xPercent: 0,
         scale: 1,
         opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out',
-      }, t + 0.3);
+        duration: 1,
+        ease: 'power2.inOut',
+      }, t);
     }
 
     // Scrub based on scroll position
     var wrapperHeight = wrapper.offsetHeight;
 
-    function updateHorizontalScroll() {
+    function updateCards() {
       var wrapperRect = wrapper.getBoundingClientRect();
       var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, progress));
-
-      // Move track directly via CSS (GSAP paused tweens are unreliable here)
-      track.style.transform = 'translateX(' + (-progress * scrollDistance) + 'px)';
-
-      // Scrub card animations via timeline
       tl.progress(progress);
     }
 
-    window.addEventListener('scroll', updateHorizontalScroll, { passive: true });
-    updateHorizontalScroll();
+    window.addEventListener('scroll', updateCards, { passive: true });
+    updateCards();
   });
 })();
 
