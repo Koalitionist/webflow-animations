@@ -98,15 +98,19 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var visible = parseInt(section.dataset.horizontalVisible) || 3;
     var gap = 20; // px gap between cards
 
-    // Auto-apply styles
+    // Auto-apply styles — break out of any Webflow container
     section.style.height = '100vh';
     section.style.overflow = 'hidden';
+    section.style.width = '100vw';
+    section.style.marginLeft = 'calc(-50vw + 50%)';
     track.style.position = 'relative';
     track.style.height = '100%';
     track.style.display = 'flex';
     track.style.alignItems = 'center';
     track.style.justifyContent = 'center';
     track.style.gap = gap + 'px';
+    track.style.paddingLeft = gap + 'px';
+    track.style.paddingRight = gap + 'px';
 
     // Cards share the viewport width
     var cardWidth = (window.innerWidth - gap * (visible + 1)) / visible;
@@ -121,8 +125,6 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     // Use native sticky for pinning
     section.style.position = 'sticky';
     section.style.top = '0';
-    track.style.paddingLeft = gap + 'px';
-    track.style.paddingRight = gap + 'px';
 
     // Wrap in a tall container for scroll room
     var steps = cards.length - visible;
