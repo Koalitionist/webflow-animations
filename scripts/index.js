@@ -98,41 +98,25 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var visible = parseInt(section.dataset.horizontalVisible) || 3;
     var gap = 20; // px gap between cards
 
-    // Auto-apply styles
+    // Auto-apply styles — respect existing Webflow container width
     section.style.height = '100vh';
     section.style.overflow = 'hidden';
-    section.style.width = '100vw';
-    section.style.marginLeft = 'calc(-50vw + 50%)';
 
-    // Force all elements between section and track to be full width
-    var el = track.parentElement;
-    while (el && el !== section) {
-      el.style.maxWidth = 'none';
-      el.style.width = '100%';
-      el.style.padding = '0';
-      el.style.margin = '0';
-      el = el.parentElement;
-    }
-
-    track.style.position = 'relative';
-    track.style.height = '100%';
     track.style.display = 'flex';
+    track.style.flexWrap = 'nowrap';
+    track.style.height = '100%';
     track.style.alignItems = 'center';
-    track.style.justifyContent = 'center';
     track.style.gap = gap + 'px';
-    track.style.paddingLeft = gap + 'px';
-    track.style.paddingRight = gap + 'px';
-    track.style.maxWidth = 'none';
-    track.style.width = '100%';
 
-    // Cards share the viewport width
-    var cardWidth = (window.innerWidth - gap * (visible + 1)) / visible;
+    // Size cards to fit within the track's natural width
+    var trackWidth = track.offsetWidth;
+    var cardWidth = (trackWidth - gap * (visible - 1)) / visible;
     cards.forEach(function (card) {
       card.style.flexShrink = '0';
       card.style.width = cardWidth + 'px';
     });
 
-    var scrollDistance = track.scrollWidth - window.innerWidth;
+    var scrollDistance = track.scrollWidth - trackWidth;
     if (scrollDistance <= 0) return;
 
     // Use native sticky for pinning
