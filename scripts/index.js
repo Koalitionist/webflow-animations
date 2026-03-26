@@ -104,22 +104,26 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     });
 
     var speed = parseFloat(section.dataset.horizontalSpeed) || 1;
-    var getScrollDistance = function () {
-      return -(track.scrollWidth - window.innerWidth);
-    };
+    var scrollDistance = track.scrollWidth - window.innerWidth;
 
-    gsap.to(track, {
-      x: getScrollDistance,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: function () {
-          return '+=' + Math.abs(getScrollDistance()) * speed;
-        },
-        pin: true,
-        scrub: true,
-        invalidateOnRefresh: true,
+    // Use native sticky instead of ScrollTrigger pin to avoid
+    // conflicts with Webflow's own ScrollTrigger pins
+    section.style.position = 'sticky';
+    section.style.top = '0';
+
+    // Create a spacer div after the section to provide scroll room
+    var spacer = document.createElement('div');
+    spacer.style.height = (scrollDistance * speed) + 'px';
+    section.parentNode.insertBefore(spacer, section.nextSibling);
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: function () {
+        return '+=' + scrollDistance * speed;
+      },
+      onUpdate: function (self) {
+        gsap.set(track, { x: -self.progress * scrollDistance });
       },
     });
   });
