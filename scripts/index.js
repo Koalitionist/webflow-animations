@@ -93,6 +93,16 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var track = section.querySelector('[data-horizontal-track]');
     if (!track) return;
 
+    // Auto-apply required styles
+    section.style.height = '100vh';
+    section.style.overflow = 'hidden';
+    track.style.display = 'flex';
+    track.style.flexWrap = 'nowrap';
+    track.style.height = '100%';
+    Array.from(track.children).forEach(function (child) {
+      child.style.flexShrink = '0';
+    });
+
     var speed = parseFloat(section.dataset.horizontalSpeed) || 1;
     var getScrollDistance = function () {
       return -(track.scrollWidth - window.innerWidth);
