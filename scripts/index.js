@@ -124,7 +124,7 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
       var wrapperHeight = wrapper.offsetHeight;
       var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, progress));
-      gsap.set(track, { x: -progress * scrollDistance });
+      track.style.transform = 'translateX(' + (-progress * scrollDistance) + 'px)';
     }
 
     window.addEventListener('scroll', updateHorizontalScroll, { passive: true });
