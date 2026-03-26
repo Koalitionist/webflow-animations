@@ -93,38 +93,91 @@ window.addEventListener('resize', function () { ScrollTrigger.refresh(); });
     var track = section.querySelector('[data-horizontal-track]');
     if (!track) return;
 
+    var cards = Array.from(track.children);
+    var speed = parseFloat(section.dataset.horizontalSpeed) || 1.5;
+
     // Auto-apply required styles
     section.style.height = '100vh';
     section.style.overflow = 'hidden';
     track.style.display = 'flex';
     track.style.flexWrap = 'nowrap';
     track.style.height = '100%';
-    Array.from(track.children).forEach(function (child) {
+    track.style.alignItems = 'center';
+    cards.forEach(function (child) {
       child.style.flexShrink = '0';
     });
 
-    var speed = parseFloat(section.dataset.horizontalSpeed) || 1;
     var scrollDistance = track.scrollWidth - window.innerWidth;
 
     // Use native sticky for pinning — avoids conflicts with Webflow's ScrollTrigger pins
     section.style.position = 'sticky';
     section.style.top = '0';
 
-    // Wrap section in a tall container to create scroll room
+    // Wrap in a tall container for scroll room
     var wrapper = document.createElement('div');
     wrapper.style.height = (scrollDistance * speed + window.innerHeight) + 'px';
     wrapper.style.position = 'relative';
     section.parentNode.insertBefore(wrapper, section);
     wrapper.appendChild(section);
 
-    // Use scroll listener with getBoundingClientRect for accurate position
-    // (avoids offset bugs from Webflow's own ScrollTrigger pins)
+    // Build a GSAP timeline for the card reveal animation
+    var tl = gsap.timeline({ paused: true });
+
+    // Set initial state: cards start slightly scaled down, shifted right, faded
+    cards.forEach(function (card, i) {
+      gsap.set(card, {
+        scale: 0.85,
+        opacity: 0.3,
+        rotateY: -8,
+        transformOrigin: 'left center',
+      });
+    });
+
+    // Animate first card in immediately
+    tl.to(cards[0], { scale: 1, opacity: 1, rotateY: 0, duration: 0.5, ease: 'power2.out' }, 0);
+
+    // For each card transition: move track left + animate current card out + next card in
+    var progressPerCard = 1 / Math.max(cards.length - 1, 1);
+
+    cards.forEach(function (card, i) {
+      if (i === 0) return;
+
+      var pos = i * progressPerCard;
+
+      // Move the track to reveal next card
+      tl.to(track, {
+        x: -(scrollDistance * (i / (cards.length - 1))),
+        duration: progressPerCard,
+        ease: 'none',
+      }, pos - progressPerCard);
+
+      // Current card zooms out slightly and fades
+      if (i > 0) {
+        tl.to(cards[i - 1], {
+          scale: 0.9,
+          opacity: 0.6,
+          duration: progressPerCard * 0.5,
+          ease: 'power2.in',
+        }, pos - progressPerCard);
+      }
+
+      // Next card zooms in and appears
+      tl.to(card, {
+        scale: 1,
+        opacity: 1,
+        rotateY: 0,
+        duration: progressPerCard * 0.7,
+        ease: 'power2.out',
+      }, pos - progressPerCard * 0.5);
+    });
+
+    // Scrub the timeline based on scroll position
     function updateHorizontalScroll() {
       var wrapperRect = wrapper.getBoundingClientRect();
       var wrapperHeight = wrapper.offsetHeight;
       var progress = -wrapperRect.top / (wrapperHeight - window.innerHeight);
       progress = Math.max(0, Math.min(1, progress));
-      track.style.transform = 'translateX(' + (-progress * scrollDistance) + 'px)';
+      tl.progress(progress);
     }
 
     window.addEventListener('scroll', updateHorizontalScroll, { passive: true });
